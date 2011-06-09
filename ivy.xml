@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+  <info organisation="com.rocketninja" module="github-java-sdk"/>
+
+  <configurations defaultconfmapping="compile->default;localrepo->default">
+    <conf name="default"/>
+    <conf name="compile"/>
+    <conf name="runtime"/>
+    <conf name="localrepo"/>
+  </configurations>
+
+  <publications>
+    <artifact type="jar" conf="localrepo"/>
+  </publications>
+
+  <dependencies>
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.6.1" />
+    <dependency org="org.codehaus.jackson" name="jackson-core-asl" rev="1.8.1" />
+    <dependency org="org.codehaus.jackson" name="jackson-mapper-asl" rev="1.8.1"/>
+    <dependency org="junit" name="junit" rev="4.8.2"/>
+  </dependencies>
+
+</ivy-module>

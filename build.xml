@@ -1,189 +1,108 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. -->
-<project basedir="." default="build" name="github-java-sdk">
-    <property environment="env"/>
-    <property name="junit.output.dir" value="junit"/>
-    <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.6"/>
-    <property name="source" value="1.6"/>
-    <path id="github-java-sdk.classpath">
-        <pathelement location="target"/>
-        <pathelement location="dev-lib/junit-4.5.jar"/>
-        <pathelement location="lib/gson-1.4.jar"/>
-    </path>
-    <target name="init">
-        <mkdir dir="target"/>
-        <copy includeemptydirs="false" todir="target">
-            <fileset dir="schema/src/main/java" excludes="**/*.launch, **/*.java"/>
-        </copy>
-        <copy includeemptydirs="false" todir="target">
-            <fileset dir="core/src/main/java" excludes="**/*.launch, **/*.java"/>
-        </copy>
-        <copy includeemptydirs="false" todir="target">
-            <fileset dir="core/src/main/resources" excludes="**/*.launch, **/*.java"/>
-        </copy>
-        <copy includeemptydirs="false" todir="target">
-            <fileset dir="core/src/test/java" excludes="**/*.launch, **/*.java"/>
-        </copy>
-        <copy includeemptydirs="false" todir="target">
-            <fileset dir="core/src/test/resources" excludes="**/*.launch, **/*.java"/>
-        </copy>
-        <copy includeemptydirs="false" todir="target">
-            <fileset dir="examples/src/resources" excludes="**/*.launch, **/*.java"/>
-        </copy>
-        <copy includeemptydirs="false" todir="target">
-            <fileset dir="examples/src/java" excludes="**/*.launch, **/*.java"/>
-        </copy>
-    </target>
-    <target name="clean">
-        <delete dir="target"/>
-    </target>
-    <target depends="clean" name="cleanall"/>
-    <target depends="build-subprojects,build-project" name="build"/>
-    <target name="build-subprojects"/>
-    <target depends="init" name="build-project">
-        <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="target" source="${source}" target="${target}">
-            <src path="schema/src/main/java"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="target" source="${source}" target="${target}">
-            <src path="core/src/main/java"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="target" source="${source}" target="${target}">
-            <src path="core/src/main/resources"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="target" source="${source}" target="${target}">
-            <src path="core/src/test/java"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="target" source="${source}" target="${target}">
-            <src path="core/src/test/resources"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="target" source="${source}" target="${target}">
-            <src path="examples/src/resources"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="target" source="${source}" target="${target}">
-            <src path="examples/src/java"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </javac>
-    </target>
-    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-    <target name="AllTests">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="com.github.api.v2.services.AllTests" todir="${junit.output.dir}"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </junit>
-    </target>
-    <target name="CommitApiSample">
-        <java classname="com.github.api.v2.services.example.CommitApiSample" failonerror="true" fork="yes">
-            <classpath refid="github-java-sdk.classpath"/>
-        </java>
-    </target>
-    <target name="CommitServiceTest">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="com.github.api.v2.services.CommitServiceTest" todir="${junit.output.dir}"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </junit>
-    </target>
-    <target name="GistApiSample">
-        <java classname="com.github.api.v2.services.example.GistApiSample" failonerror="true" fork="yes">
-            <classpath refid="github-java-sdk.classpath"/>
-        </java>
-    </target>
-    <target name="GistServiceTest">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="com.github.api.v2.services.GistServiceTest" todir="${junit.output.dir}"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </junit>
-    </target>
-    <target name="IssueApiSample">
-        <java classname="com.github.api.v2.services.example.IssueApiSample" failonerror="true" fork="yes">
-            <classpath refid="github-java-sdk.classpath"/>
-        </java>
-    </target>
-    <target name="IssueServiceTest">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="com.github.api.v2.services.IssueServiceTest" todir="${junit.output.dir}"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </junit>
-    </target>
-    <target name="NetworkApiSample">
-        <java classname="com.github.api.v2.services.example.NetworkApiSample" failonerror="true" fork="yes">
-            <classpath refid="github-java-sdk.classpath"/>
-        </java>
-    </target>
-    <target name="NetworkServiceTest">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="com.github.api.v2.services.NetworkServiceTest" todir="${junit.output.dir}"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </junit>
-    </target>
-    <target name="OAuthExample (1)">
-        <java classname="com.github.api.v2.services.example.OAuthExample" failonerror="true" fork="yes">
-            <classpath refid="github-java-sdk.classpath"/>
-        </java>
-    </target>
-    <target name="ObjectApiSample">
-        <java classname="com.github.api.v2.services.example.ObjectApiSample" failonerror="true" fork="yes">
-            <classpath refid="github-java-sdk.classpath"/>
-        </java>
-    </target>
-    <target name="ObjectServiceTest">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="com.github.api.v2.services.ObjectServiceTest" todir="${junit.output.dir}"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </junit>
-    </target>
-    <target name="RepositoryApiSample">
-        <java classname="com.github.api.v2.services.example.RepositoryApiSample" failonerror="true" fork="yes">
-            <classpath refid="github-java-sdk.classpath"/>
-        </java>
-    </target>
-    <target name="UserApiSample">
-        <java classname="com.github.api.v2.services.example.UserApiSample" failonerror="true" fork="yes">
-            <classpath refid="github-java-sdk.classpath"/>
-        </java>
-    </target>
-    <target name="FeedSample">
-        <java classname="com.github.api.v2.services.example.FeedSample" failonerror="true" fork="yes">
-            <classpath refid="github-java-sdk.classpath"/>
-        </java>
-    </target>
-    <target name="FeedServiceTest">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="com.github.api.v2.services.FeedServiceTest" todir="${junit.output.dir}"/>
-            <classpath refid="github-java-sdk.classpath"/>
-        </junit>
-    </target>
-    <target name="junitreport">
-        <junitreport todir="${junit.output.dir}">
-            <fileset dir="${junit.output.dir}">
-                <include name="TEST-*.xml"/>
-            </fileset>
-            <report format="frames" todir="${junit.output.dir}"/>
-        </junitreport>
-    </target>
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="all" name="github-java-sdk"
+         xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <property name="debug.level" value="source,lines,vars"/>
+  <property name="debug" value="true"/>
+  <property name="src.dir" value="src"/>
+  <property name="java.src.dir" value="${src.dir}/main/java"/>
+  <property name="test.src.dir" value="${src.dir}/test/java"/>
+  <property name="test.resource.dir" value="${src.dir}/test/resources"/>
+  <property name="build.resource.dir" value="${src.dir}/main/resources"/>
+  <property name="build.dir" value="build"/>
+  <property name="build.dest.dir" value="${build.dir}/classes"/>
+  <property name="build.test.dir" value="${build.dir}/test"/>
+  <property name="junit.output.dir" value="${build.dir}"/>
+  <property name="junit.report.dir" value="${build.dir}/report"/>
+  <property name="dist.dir" value="dist"/>
+  <property name="project.name" value="${ant.project.name}"/>
+  <property name="version.base" value="1"/>
+
+  <path id="project.classpath">
+    <pathelement location="${build.dest.dir}"/>
+    <pathelement location="lib/gson-1.4.jar"/>
+  </path>
+
+  <path id="project.test.classpath">
+    <path refid="project.classpath"/>
+    <pathelement location="${build.test.dir}"/>
+    <pathelement location="lib/junit-4.5.jar"/>
+  </path>
+
+  <target name="init">
+    <buildnumber/>
+    <property name="version" value="-${user.name}-${version.base}.${build.number}"/>
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.dest.dir}"/>
+    <mkdir dir="${build.test.dir}"/>
+    <mkdir dir="${junit.output.dir}"/>
+    <mkdir dir="${dist.dir}"/>
+    <!-- <ivy:retrieve/> -->
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
+
+  <macrodef name="compile">
+    <attribute name="src.dir"/>
+    <attribute name="output.dir" default="${build.dest.dir}"/>
+    <attribute name="classpathref" default="project.classpath"/>
+    <sequential>
+      <javac srcdir="@{src.dir}"
+             destdir="@{output.dir}"
+             includeantruntime="false"
+             debug="${debug}"
+             debuglevel="${debug.level}">
+        <classpath>
+          <path refid="@{classpathref}"/>
+        </classpath>
+      </javac>
+    </sequential>
+  </macrodef>
+
+  <target name="build" depends="init">
+    <echo message="${ant.project.name}: ${ant.file}"/>
+    <compile src.dir="${java.src.dir}"/>
+    <compile src.dir="${test.src.dir}" output.dir="${build.test.dir}" classpathref="project.test.classpath"/>
+  </target>
+
+  <target name="test" depends="build">
+    <junit fork="yes" printsummary="withOutAndErr">
+      <formatter type="xml"/>
+      <classpath refid="project.test.classpath"/>
+
+      <batchtest todir="${build.dir}">
+        <fileset dir="${test.src.dir}">
+          <include name="**/*Test.java"/>
+          <exclude name="**/BaseGitHubServiceTest.java"/>
+          <exclude name="**/AllTests.java"/>
+        </fileset>
+        <fileset dir="${test.resource.dir}"/>
+      </batchtest>
+
+    </junit>
+
+    <junitreport todir="${junit.output.dir}">
+      <fileset dir="${build.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${junit.report.dir}"/>
+    </junitreport>
+  </target>
+
+  <target name="jar" depends="build">
+    <jar destfile="${dist.dir}/${project.name}${version}.jar">
+      <fileset dir="${build.dir}/classes"/>
+      <fileset dir="${build.resource.dir}">
+        <exclude name="**/*~"/>
+        <exclude name="**/*.java"/>
+        <exclude name="**/*.html"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="all" depends="clean,build,test,jar"/>
+
 </project>
