@@ -66,6 +66,10 @@
     <echo message="${ant.project.name}: ${ant.file}"/>
     <compile src.dir="${java.src.dir}"/>
     <compile src.dir="${test.src.dir}" output.dir="${build.test.dir}" classpathref="project.test.classpath"/>
+    <copy todir="${build.test.dir}">
+        <fileset dir="${test.resource.dir}" includes="**/*.properties"/>
+        <fileset dir="${build.resource.dir}" includes="**/*.properties"/>
+    </copy>
   </target>
 
   <target name="test" depends="build">
