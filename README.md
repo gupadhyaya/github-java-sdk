@@ -46,6 +46,16 @@ Authenticated usage is not very different from typical usage. Before calling any
 	RepositoryService service = factory.createRepositoryService();
 	service.setAuthentication(new LoginTokenAuthentication("nabeelmukhtar", "xxx-xxx-xxx"));
 	service.createRepository("new-repo", "Creating new repository.", "http://www.example.com", Repository.Visibility.PUBLIC);
+
+## Executing Unit Tests
+If you'd like to build the library and run the tests, you'll need to first modify some of the settings in `src/test/resources/com/github/api/v2/services/constant/TestConstants.properties`.
+
+* `com.github.api.v2.services.apiKey`: Your API token as shown under api token on https://github.com/account/admin
+* `com.github.api.v2.services.testUserName`: Your GitHub username
+
+The first couple of times you run the tests you'll receive lots of errors. As the tests have run more times and created more artifacts in your sample respository, the number of errors will decrease. At some point you should reach the state where all test failures are the result of features not being implemented.
+
+
 ## More Information
 For more information see the following wiki pages.
 

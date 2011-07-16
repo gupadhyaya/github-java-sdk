@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.github.api.v2.schema.Gist;
 import com.github.api.v2.services.GistService;
+import com.github.api.v2.services.GitHubAPIResponse;
 import com.github.api.v2.services.constant.GitHubApiUrls;
 import com.github.api.v2.services.constant.ParameterNames;
 import com.github.api.v2.services.constant.GitHubApiUrls.GitHubApiUrlBuilder;
@@ -40,7 +41,9 @@ public class GistServiceImpl extends BaseGitHubService implements
 	public Gist getGist(String gistId) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.GistApiUrls.GET_GIST_URL);
         String                apiUrl  = builder.withField(ParameterNames.GIST_ID, gistId).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         List<Gist> gists = unmarshall(new TypeToken<List<Gist>>(){}, json.get("gists"));
         return (gists.isEmpty())? null : gists.get(0);
@@ -53,7 +56,10 @@ public class GistServiceImpl extends BaseGitHubService implements
 	public InputStream getGistContent(String gistId, String fileName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.GistApiUrls.GET_GIST_CONTENT_URL);
         String                apiUrl  = builder.withField(ParameterNames.GIST_ID, gistId).withField(ParameterNames.FILE_NAME, fileName).buildUrl();
-        return callApiGet(apiUrl);
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+
+        return resp.getInputStream();
 	}
 
 	/* (non-Javadoc)
@@ -63,7 +69,9 @@ public class GistServiceImpl extends BaseGitHubService implements
 	public List<Gist> getUserGists(String userName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.GistApiUrls.GET_USER_GISTS_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Gist>>(){}, json.get("gists"));
 	}

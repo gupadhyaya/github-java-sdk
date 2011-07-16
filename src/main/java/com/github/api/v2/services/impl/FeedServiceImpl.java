@@ -18,6 +18,7 @@ package com.github.api.v2.services.impl;
 
 import com.github.api.v2.schema.Feed;
 import com.github.api.v2.services.FeedService;
+import com.github.api.v2.services.GitHubAPIResponse;
 import com.github.api.v2.services.GitHubException;
 import com.github.api.v2.services.constant.GitHubApiUrls;
 import com.github.api.v2.services.constant.ParameterNames;
@@ -151,7 +152,9 @@ public class FeedServiceImpl extends BaseGitHubService implements
 	 * @return the feed
 	 */
 	protected Feed unmarshall(String apiUrl) {
-        JsonObject response = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject response = unmarshall(resp.getInputStream());
     	if (response.isJsonObject()) {
     		JsonObject json = response.getAsJsonObject();
     		int status = json.get("responseStatus").getAsInt();

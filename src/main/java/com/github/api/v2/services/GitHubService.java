@@ -16,9 +16,37 @@
  */
 package com.github.api.v2.services;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * The Interface GitHubService.
  */
 public interface GitHubService extends GitHubAuthenticator {
+	/**
+	 * Process the headers returned from an API call
+	 *
+	 * @param headers
+	 * 				mapping of headers to list of possible values
+	 */
+	public void processHeaders(Map<String, List<String>> headers);
 
+	/**
+	 * Gets the periodic rate limit for GitHub services
+	 *
+	 * I'm not certain if there is a way to tell when the rate limit will reset
+	 * Sometimes it's a day, sometimes it's a minute.
+	 *
+	 * @return the periodic rate limit
+	 */
+	public int getRateLimit();
+
+	/**
+	 * Gets the remaining rate limit for the API
+	 *
+	 * @see com.github.api.v2.services.GitHubService#getRateLimit()
+	 *
+	 * @return the periodic rate limit remaining
+	 */
+	public int getRateLimitRemaining();
 }

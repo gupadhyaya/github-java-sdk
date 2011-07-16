@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.github.api.v2.schema.PullRequest;
 import com.github.api.v2.schema.Issue.State;
+import com.github.api.v2.services.GitHubAPIResponse;
 import com.github.api.v2.services.PullRequestService;
 import com.github.api.v2.services.constant.GitHubApiUrls;
 import com.github.api.v2.services.constant.ParameterNames;
@@ -42,7 +43,9 @@ public class PullRequestServiceImpl extends BaseGitHubService implements
 	public PullRequest getPullRequest(String userName, String repositoryName, int issueNumber) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.PullRequestApiUrls.GET_PULL_REQUEST_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).withField(ParameterNames.ISSUE_NUMBER, String.valueOf(issueNumber)).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<PullRequest>(){}, json.get("pull"));
 	}
@@ -54,7 +57,9 @@ public class PullRequestServiceImpl extends BaseGitHubService implements
 	public List<PullRequest> getPullRequests(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.PullRequestApiUrls.GET_PULL_REQUESTS_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).withField(ParameterNames.STATE, "").buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<PullRequest>>(){}, json.get("pulls"));
 	}
@@ -66,7 +71,9 @@ public class PullRequestServiceImpl extends BaseGitHubService implements
 	public List<PullRequest> getPullRequests(String userName, String repositoryName, State state) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.PullRequestApiUrls.GET_PULL_REQUESTS_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).withField(ParameterNames.STATE, state.value()).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<PullRequest>>(){}, json.get("pulls"));
 	}
@@ -82,8 +89,10 @@ public class PullRequestServiceImpl extends BaseGitHubService implements
         parameters.put("pull[" + ParameterNames.HEAD + "]", head);
         parameters.put("pull[" + ParameterNames.TITLE + "]", title);
         parameters.put("pull[" + ParameterNames.BODY + "]", body);
-        JsonObject json = unmarshall(callApiPost(apiUrl, parameters));
-        
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
+
         return unmarshall(new TypeToken<PullRequest>(){}, json.get("pull"));
 	}
 }

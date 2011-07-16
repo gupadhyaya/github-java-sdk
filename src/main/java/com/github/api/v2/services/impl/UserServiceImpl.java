@@ -24,6 +24,7 @@ import com.github.api.v2.schema.Key;
 import com.github.api.v2.schema.Organization;
 import com.github.api.v2.schema.Repository;
 import com.github.api.v2.schema.User;
+import com.github.api.v2.services.GitHubAPIResponse;
 import com.github.api.v2.services.UserService;
 import com.github.api.v2.services.constant.GitHubApiUrls;
 import com.github.api.v2.services.constant.ParameterNames;
@@ -47,7 +48,8 @@ public class UserServiceImpl extends BaseGitHubService implements
         String                apiUrl  = builder.buildUrl();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(ParameterNames.EMAIL, email);
-		callApiPost(apiUrl, parameters);
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
 	}
 
 	/* (non-Javadoc)
@@ -60,7 +62,8 @@ public class UserServiceImpl extends BaseGitHubService implements
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(ParameterNames.TITLE, title);
         parameters.put(ParameterNames.KEY, key);
-		callApiPost(apiUrl, parameters);
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
 	}
 
 	/* (non-Javadoc)
@@ -70,7 +73,8 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public void followUser(String userName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.FOLLOW_USER_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).buildUrl();
-		callApiPost(apiUrl, new HashMap<String, String>());
+        GitHubAPIResponse resp = callApiPost(apiUrl, new HashMap<String, String>());
+        processHeaders(resp.getHeaders());
 	}
 
 	/* (non-Javadoc)
@@ -80,7 +84,9 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public User getCurrentUser() {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.GET_CURRENT_USER_URL);
         String                apiUrl  = builder.buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<User>(){}, json.get("user"));
 	}
@@ -92,7 +98,9 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public List<String> getEmails() {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.GET_EMAILS_URL);
         String                apiUrl  = builder.buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<String>>(){}, json.get("emails"));
 	}
@@ -104,7 +112,9 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public List<Key> getKeys() {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.GET_KEYS_URL);
         String                apiUrl  = builder.buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Key>>(){}, json.get("public_keys"));
 	}
@@ -116,7 +126,9 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public User getUserByUsername(String userName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.GET_USER_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<User>(){}, json.get("user"));
 	}
@@ -128,7 +140,9 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public List<String> getUserFollowers(String userName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.GET_USER_FOLLOWERS_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<String>>(){}, json.get("users"));
 	}
@@ -140,7 +154,9 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public List<String> getUserFollowing(String userName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.GET_USER_FOLLOWING_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<String>>(){}, json.get("users"));
 	}
@@ -152,7 +168,9 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public List<Repository> getWatchedRepositories(String userName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.GET_WATCHED_REPOSITORIES_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("repositories"));
 	}
@@ -166,7 +184,8 @@ public class UserServiceImpl extends BaseGitHubService implements
         String                apiUrl  = builder.buildUrl();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(ParameterNames.EMAIL, email);
-		callApiPost(apiUrl, parameters);
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
 	}
 
 	/* (non-Javadoc)
@@ -178,8 +197,9 @@ public class UserServiceImpl extends BaseGitHubService implements
         String                apiUrl  = builder.buildUrl();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(ParameterNames.ID, id);
-		callApiPost(apiUrl, parameters);
-	}
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
+    }
 
 	/* (non-Javadoc)
 	 * @see com.github.api.v2.services.UserService#getUserByEmail(java.lang.String)
@@ -188,7 +208,9 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public User getUserByEmail(String email) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.SEARCH_USERS_BY_EMAIL_URL);
         String                apiUrl  = builder.withField(ParameterNames.EMAIL, email).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<User>(){}, json.get("user"));
 	}
@@ -200,7 +222,9 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public List<User> searchUsersByName(String name) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.SEARCH_USERS_BY_NAME_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, name).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
 		Gson gson = getGsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 		return gson.fromJson(json.get("users"), new TypeToken<List<User>>(){}.getType());
@@ -213,7 +237,8 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public void unfollowUser(String userName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.UNFOLLOW_USER_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).buildUrl();
-		callApiPost(apiUrl, new HashMap<String, String>());
+        GitHubAPIResponse resp = callApiPost(apiUrl, new HashMap<String, String>());
+        processHeaders(resp.getHeaders());
 	}
 	
 	/* (non-Javadoc)
@@ -223,7 +248,9 @@ public class UserServiceImpl extends BaseGitHubService implements
 	public List<Organization> getUserOrganizations(String userName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.UserApiUrls.GET_USER_ORGANIZATIONS);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Organization>>(){}, json.get("organizations"));
 	}
@@ -242,7 +269,8 @@ public class UserServiceImpl extends BaseGitHubService implements
         parameters.put("values[" + ParameterNames.BLOG + "]", user.getBlog());
         parameters.put("values[" + ParameterNames.COMPANY + "]", user.getCompany());
         parameters.put("values[" + ParameterNames.LOCATION + "]", user.getLocation());
-		callApiPost(apiUrl, parameters);
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
 	}
 
 }

@@ -25,6 +25,7 @@ import com.github.api.v2.schema.Permission;
 import com.github.api.v2.schema.Repository;
 import com.github.api.v2.schema.Team;
 import com.github.api.v2.schema.User;
+import com.github.api.v2.services.GitHubAPIResponse;
 import com.github.api.v2.services.OrganizationService;
 import com.github.api.v2.services.constant.GitHubApiUrls;
 import com.github.api.v2.services.constant.ParameterNames;
@@ -48,7 +49,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
         String                apiUrl  = builder.withField(ParameterNames.TEAM_ID, teamId).buildUrl();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(ParameterNames.NAME, userName);
-        unmarshall(callApiPost(apiUrl, parameters));
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
+        unmarshall(resp.getInputStream());
 	}
 
 	/* (non-Javadoc)
@@ -60,7 +63,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
         String                apiUrl  = builder.withField(ParameterNames.TEAM_ID, teamId).buildUrl();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(ParameterNames.NAME, userName + "/" + repositoryName);
-        unmarshall(callApiPost(apiUrl, parameters));
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
+        unmarshall(resp.getInputStream());
 	}
 
 	/* (non-Javadoc)
@@ -76,8 +81,10 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
         for (String repoName : repoNames) {
             parameters.put("team[" + ParameterNames.REPO_NAMES + "][]", repoName);
 		}
-        JsonObject json = unmarshall(callApiPost(apiUrl, parameters));
-        
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
+
         return unmarshall(new TypeToken<Team>(){}, json.get("team"));
 	}
 
@@ -98,7 +105,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public List<Repository> getAllOrganizationRepositories() {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.GET_ALL_REPOSITORIES_URL);
         String                apiUrl  = builder.buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("repositories"));
 	}
@@ -110,7 +119,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public Organization getOrganization(String name) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.GET_ORGANIZATION_URL);
         String                apiUrl  = builder.withField(ParameterNames.ORGANIZATION_NAME, name).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
 		Gson gson = getGsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 		return gson.fromJson(json.get("organization"), new TypeToken<Organization>(){}.getType());
@@ -123,7 +134,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public List<User> getPublicMembers(String organizationName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.GET_PUBLIC_MEMBERS_URL);
         String                apiUrl  = builder.withField(ParameterNames.ORGANIZATION_NAME, organizationName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<User>>(){}, json.get("users"));
 	}
@@ -134,7 +147,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public List<User> getOwners(String organizationName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.GET_OWNERS_URL);
         String                apiUrl  = builder.withField(ParameterNames.ORGANIZATION_NAME, organizationName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<User>>(){}, json.get("users"));
 	}
@@ -146,7 +161,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public List<Repository> getPublicRepositories(String organizationName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.GET_PUBLIC_REPOSITORIES_URL);
         String                apiUrl  = builder.withField(ParameterNames.ORGANIZATION_NAME, organizationName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("repositories"));
 	}
@@ -158,7 +175,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public Team getTeam(String teamId) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.GET_TEAM_URL);
         String                apiUrl  = builder.withField(ParameterNames.TEAM_ID, teamId).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<Team>(){}, json.get("team"));
 	}
@@ -170,7 +189,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public List<User> getTeamMembers(String teamId) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.GET_TEAM_MEMBERS_URL);
         String                apiUrl  = builder.withField(ParameterNames.TEAM_ID, teamId).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<User>>(){}, json.get("users"));
 	}
@@ -182,7 +203,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public List<Repository> getTeamRepositories(String teamId) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.GET_TEAM_REPOSITORIES_URL);
         String                apiUrl  = builder.withField(ParameterNames.TEAM_ID, teamId).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("repositories"));
 	}
@@ -194,7 +217,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public List<Team> getTeams(String organizationName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.GET_TEAMS_URL);
         String                apiUrl  = builder.withField(ParameterNames.ORGANIZATION_NAME, organizationName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Team>>(){}, json.get("teams"));
 	}
@@ -206,7 +231,9 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public List<Organization> getUserOrganizations() {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.GET_ORGANIZATIONS_URL);
         String                apiUrl  = builder.buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Organization>>(){}, json.get("organizations"));
 	}
@@ -218,7 +245,8 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public void removeTeamMember(String teamId, String userName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.REMOVE_TEAM_MEMBER_URL);
         String                apiUrl  = builder.withField(ParameterNames.TEAM_ID, teamId).withParameter(ParameterNames.NAME, userName).buildUrl();
-        callApiDelete(apiUrl);
+        GitHubAPIResponse resp = callApiDelete(apiUrl);
+        processHeaders(resp.getHeaders());
 	}
 
 	/* (non-Javadoc)
@@ -228,7 +256,8 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 	public void removeTeamRepository(String teamId, String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.REMOVE_TEAM_REPOSITORY_URL);
         String                apiUrl  = builder.withField(ParameterNames.TEAM_ID, teamId).withParameter(ParameterNames.NAME, userName + "/" + repositoryName).buildUrl();
-        callApiDelete(apiUrl);
+        GitHubAPIResponse resp = callApiDelete(apiUrl);
+        processHeaders(resp.getHeaders());
 	}
 
 	/* (non-Javadoc)
@@ -245,7 +274,8 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
         parameters.put("organization[" + ParameterNames.COMPANY + "]", organization.getCompany());
         parameters.put("organization[" + ParameterNames.LOCATION + "]", organization.getLocation());
         parameters.put("organization[" + ParameterNames.BILLING_EMAIL + "]", organization.getBillingEmail());
-        callApiPost(apiUrl, parameters);
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
 	}
 
 	/* (non-Javadoc)
@@ -256,6 +286,7 @@ public class OrganizationServiceImpl extends BaseGitHubService implements
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.OrganizationApiUrls.UPDATE_TEAM_URL);
 		String                apiUrl  = builder.withField(ParameterNames.TEAM_ID, team.getId()).buildUrl();
 		
-        callApiMethod(apiUrl, getGsonBuilder().create().toJson(team), "application/json", "PUT", 200);
+        GitHubAPIResponse resp = callApiMethod(apiUrl, getGsonBuilder().create().toJson(team), "application/json", "PUT", 200);
+        processHeaders(resp.getHeaders());
 	}
 }
