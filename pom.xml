@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.api.v2</groupId>
+  <artifactId>github-java-sdk</artifactId>
+  <version>0.1</version>
+  <packaging>jar</packaging>
+  <name>GitHub API Java SDK</name>
+  <inceptionYear>2010</inceptionYear>
+  <description>A Java wrapper for GitHub API.</description>
+  <url>http://github.com/nabeelmukhtar/github-java-sdk</url>
+
+  <issueManagement>
+    <system>github</system>
+    <url>http://github.com/nabeelmukhtar/github-java-sdk/issues</url>
+  </issueManagement>
+
+  <scm>
+    <connection>scm:git:git://github.com/nabeelmukhtar/github-java-sdk.git</connection>
+    <developerConnection>scm:git:git@github.com:nabeelmukhtar/github-java-sdk.git</developerConnection>
+    <url>https://nabeelmukhtar@github.com/nabeelmukhtar/github-java-sdk.git</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Nabeel Mukhtar</name>
+      <id>nabeelmukhtar</id>
+    </developer>
+  </developers>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <junit-version>4.5</junit-version>
+    <gson-version>1.7.1</gson-version>
+  </properties>
+
+  <repositories>
+    <repository>
+        <id>wagstrom-net-external_free</id>
+        <url>http://patrick.wagstrom.net/maven/external_free</url>
+        <snapshots>
+          <enabled>true</enabled>
+          <updatePolicy>always</updatePolicy>
+        </snapshots>
+    </repository>
+  </repositories>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit-version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gson-version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>1.0-beta-6</version>
+      </extension>
+    </extensions>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.0.2</version>
+        </plugin>
+     </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>wagstrom-net-external_free</id>
+      <name>Wagstrom.net External Projects</name>
+      <url>scpexe://patrick.wagstrom.net:7643/www/patrick/maven/external_free</url>
+      <layout>default</layout>
+      <uniqueVersion>false</uniqueVersion>
+    </repository>
+  </distributionManagement>
+</project>
