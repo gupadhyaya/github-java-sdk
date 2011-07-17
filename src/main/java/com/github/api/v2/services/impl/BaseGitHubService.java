@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.github.api.v2.schema.Discussion;
 import com.github.api.v2.schema.Gist;
@@ -63,6 +64,13 @@ public abstract class BaseGitHubService extends GitHubApiGateway implements GitH
     /** The handlers. */
     private List<AsyncResponseHandler<List<? extends SchemaEntity>>> handlers = new ArrayList<AsyncResponseHandler<List<? extends SchemaEntity>>>();
     
+    /** Rate limiting stuff */
+    private static final String HEADER_RATELIMIT = "X-RateLimit-Limit";
+    private static final String HEADER_RATELIMITREMAINING = "X-RateLimit-Remaining";
+    private Integer rateLimit = null;
+    private Integer rateLimitRemaining = null;
+    private Map<String, List<String>> headers = null;
+
     /**
      * Instantiates a new base git hub service.
      */
@@ -230,5 +238,32 @@ public abstract class BaseGitHubService extends GitHubApiGateway implements GitH
      */
     protected GitHubApiUrlBuilder createGitHubApiUrlBuilder(String urlFormat) {
         return new GitHubApiUrlBuilder(urlFormat);
+    }
+
+    /* (non-Javadoc)
+     * @see com.github.api.v2.services.GitHubService#processHeaders(java.util.Map)
+     */
+    public void processHeaders(Map<String, List<String>> headers) {
+	this.headers = headers;
+	if (headers.containsKey(HEADER_RATELIMIT))
+		rateLimit = Integer.parseInt(headers.get(HEADER_RATELIMIT).get(0));
+	if (headers.containsKey(HEADER_RATELIMITREMAINING))
+		rateLimitRemaining = Integer.parseInt(headers.get(HEADER_RATELIMITREMAINING).get(0));
+    }
+
+    /* (non-Javadoc)
+     * @see com.github.api.v2.services.GitHubService#getRateLimit()
+     */
+    public int getRateLimit() {
+	if (rateLimit == null) return -1;
+	return rateLimit.intValue();
+    }
+
+    /* (non-Javadoc)
+     * @see com.github.api.v2.services.GitHubService#getRateLimitRemaining()
+     */
+    public int getRateLimitRemaining() {
+	if (rateLimitRemaining == null) return -1;
+	return rateLimitRemaining.intValue();
     }
 }

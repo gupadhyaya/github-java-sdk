@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.github.api.v2.schema.Commit;
 import com.github.api.v2.services.CommitService;
+import com.github.api.v2.services.GitHubAPIResponse;
 import com.github.api.v2.services.constant.GitHubApiUrls;
 import com.github.api.v2.services.constant.ParameterNames;
 import com.github.api.v2.services.constant.GitHubApiUrls.GitHubApiUrlBuilder;
@@ -40,7 +41,9 @@ public class CommitServiceImpl extends BaseGitHubService implements
 	public Commit getCommit(String userName, String repositoryName, String sha) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.CommitApiUrls.GET_COMMIT_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).withField(ParameterNames.SHA, sha).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<Commit>(){}, json.get("commit"));
 	}
@@ -62,7 +65,9 @@ public class CommitServiceImpl extends BaseGitHubService implements
 			String branch, int pageNumber) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.CommitApiUrls.GET_COMMITS_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).withField(ParameterNames.BRANCH, branch).withParameter(ParameterNames.PAGE, String.valueOf(pageNumber)).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Commit>>(){}, json.get("commits"));
 	}
@@ -75,7 +80,9 @@ public class CommitServiceImpl extends BaseGitHubService implements
 			String branch, String filePath) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.CommitApiUrls.GET_COMMITS_FILE_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).withField(ParameterNames.BRANCH, branch).withField(ParameterNames.FILE_PATH, filePath).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Commit>>(){}, json.get("commits"));
 	}

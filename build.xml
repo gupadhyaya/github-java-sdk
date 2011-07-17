@@ -105,6 +105,10 @@
         <exclude name="**/*.html"/>
       </fileset>
     </jar>
+    <jar destfile="${dist.dir}/${project.name}${version}.src.jar">
+      <fileset dir="${java.src.dir}" includes="**/*.java"/>
+      <fileset dir="${test.src.dir}" includes="**/*.java"/>
+    </jar>
   </target>
 
   <target name="all" depends="clean,build,test,jar"/>

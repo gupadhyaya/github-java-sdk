@@ -19,12 +19,14 @@ package com.github.api.v2.services.impl;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+import com.github.api.v2.services.GitHubAPIResponse;
 import com.github.api.v2.services.GitHubException;
 import com.github.api.v2.services.OAuthService;
 import com.github.api.v2.services.constant.ApplicationConstants;
 import com.github.api.v2.services.constant.GitHubApiUrls;
 import com.github.api.v2.services.constant.ParameterNames;
 import com.github.api.v2.services.constant.GitHubApiUrls.GitHubApiUrlBuilder;
+import com.google.gson.JsonObject;
 
 /**
  * The Class OAuthServiceImpl.
@@ -83,8 +85,11 @@ public class OAuthServiceImpl extends BaseGitHubService implements OAuthService 
     		builder.withParameter(ParameterNames.CLIENT_SECRET, secret);
     		builder.withParameter(ParameterNames.REDIRECT_URI, callBackUrl);
     		builder.withParameter(ParameterNames.CODE, code);
-    		
-			String response = convertStreamToString(callApiGet(builder.buildUrl()));
+
+		GitHubAPIResponse resp = callApiGet(builder.buildUrl());
+            processHeaders(resp.getHeaders());
+
+			String response = convertStreamToString(resp.getInputStream());
 			Matcher matcher = ApplicationConstants.ACCESS_TOKEN_PATTERN.matcher(response);
 			if (matcher.find()) {
             	return matcher.group(1);

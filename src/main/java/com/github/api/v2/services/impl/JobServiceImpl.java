@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.github.api.v2.schema.GeoLocation;
 import com.github.api.v2.schema.Job;
+import com.github.api.v2.services.GitHubAPIResponse;
 import com.github.api.v2.services.GitHubException;
 import com.github.api.v2.services.JobService;
 import com.github.api.v2.services.constant.GitHubApiUrls;
@@ -44,7 +45,9 @@ public class JobServiceImpl extends BaseGitHubService implements JobService {
 	public Job getJob(String id) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.JobApiUrls.GET_JOB_URL);
         String                apiUrl  = builder.withField(ParameterNames.ID, id).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         return unmarshall(new TypeToken<Job>(){}, json);        
 	}
 
@@ -55,7 +58,9 @@ public class JobServiceImpl extends BaseGitHubService implements JobService {
 	public List<Job> searchFullTimeJobs(String query) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.JobApiUrls.SEARCH_JOBS_URL);
         String                apiUrl  = builder.withParameter(ParameterNames.SEARCH, query).withParameter(ParameterNames.FULL_TIME, "true").buildUrl();
-        JsonElement json = unmarshallList(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonElement json = unmarshallList(resp.getInputStream());
         return unmarshall(new TypeToken<List<Job>>(){}, json);	
     }
 
@@ -66,7 +71,9 @@ public class JobServiceImpl extends BaseGitHubService implements JobService {
 	public List<Job> searchFullTimeJobs(String query, String location) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.JobApiUrls.SEARCH_JOBS_URL);
         String                apiUrl  = builder.withParameter(ParameterNames.FULL_TIME, "true").withParameter(ParameterNames.SEARCH, query).withParameter(ParameterNames.LOCATION, location).buildUrl();
-        JsonElement json = unmarshallList(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonElement json = unmarshallList(resp.getInputStream());
         return unmarshall(new TypeToken<List<Job>>(){}, json);	
 	}
 
@@ -77,7 +84,9 @@ public class JobServiceImpl extends BaseGitHubService implements JobService {
 	public List<Job> searchFullTimeJobs(String query, GeoLocation location) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.JobApiUrls.SEARCH_JOBS_URL);
         String                apiUrl  = builder.withParameter(ParameterNames.FULL_TIME, "true").withParameter(ParameterNames.SEARCH, query).withParameter(ParameterNames.LATITUDE, String.valueOf(location.getLatitude())).withParameter(ParameterNames.LONGITUDE, String.valueOf(location.getLongitude())).buildUrl();
-        JsonElement json = unmarshallList(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonElement json = unmarshallList(resp.getInputStream());
         return unmarshall(new TypeToken<List<Job>>(){}, json);	
 	}
 
@@ -88,7 +97,9 @@ public class JobServiceImpl extends BaseGitHubService implements JobService {
 	public List<Job> searchJobs(String query) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.JobApiUrls.SEARCH_JOBS_URL);
         String                apiUrl  = builder.withParameter(ParameterNames.SEARCH, query).buildUrl();
-        JsonElement json = unmarshallList(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonElement json = unmarshallList(resp.getInputStream());
         return unmarshall(new TypeToken<List<Job>>(){}, json);	
 	}
 
@@ -99,7 +110,9 @@ public class JobServiceImpl extends BaseGitHubService implements JobService {
 	public List<Job> searchJobs(String query, String location) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.JobApiUrls.SEARCH_JOBS_URL);
         String                apiUrl  = builder.withParameter(ParameterNames.SEARCH, query).withParameter(ParameterNames.LOCATION, location).buildUrl();
-        JsonElement json = unmarshallList(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonElement json = unmarshallList(resp.getInputStream());
         return unmarshall(new TypeToken<List<Job>>(){}, json);	
 	}
 
@@ -110,7 +123,10 @@ public class JobServiceImpl extends BaseGitHubService implements JobService {
 	public List<Job> searchJobs(String query, GeoLocation location) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.JobApiUrls.SEARCH_JOBS_URL);
         String                apiUrl  = builder.withParameter(ParameterNames.SEARCH, query).withParameter(ParameterNames.LATITUDE, String.valueOf(location.getLatitude())).withParameter(ParameterNames.LONGITUDE, String.valueOf(location.getLongitude())).buildUrl();
-        JsonElement json = unmarshallList(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonElement json = unmarshallList(resp.getInputStream());
+
         return unmarshall(new TypeToken<List<Job>>(){}, json);	
 	}
 	

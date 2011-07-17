@@ -26,6 +26,7 @@ import com.github.api.v2.schema.Language;
 import com.github.api.v2.schema.Repository;
 import com.github.api.v2.schema.User;
 import com.github.api.v2.schema.Repository.Visibility;
+import com.github.api.v2.services.GitHubAPIResponse;
 import com.github.api.v2.services.RepositoryService;
 import com.github.api.v2.services.constant.GitHubApiUrls;
 import com.github.api.v2.services.constant.ParameterNames;
@@ -46,7 +47,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public void addCollaborator(String userName, String repositoryName, String collaboratorName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.ADD_COLLABORATOR_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).withField(ParameterNames.COLLABORATOR_NAME, collaboratorName).buildUrl();
-        unmarshall(callApiPost(apiUrl, new HashMap<String, String>()));
+        GitHubAPIResponse resp = callApiPost(apiUrl, new HashMap<String, String>());
+        processHeaders(resp.getHeaders());
+        unmarshall(resp.getInputStream());
 	}
 
 	/* (non-Javadoc)
@@ -59,8 +62,10 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(ParameterNames.TITLE, title);
         parameters.put(ParameterNames.KEY, key);
-        JsonObject json = unmarshall(callApiPost(apiUrl, parameters));
-        
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
+
         return unmarshall(new TypeToken<List<Key>>(){}, json.get("public_keys"));
 	}
 
@@ -71,8 +76,10 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public void changeVisibility(String repositoryName, Visibility visibility) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.CHANGE_VISIBILITY_URL);
         String                apiUrl  = builder.withField(ParameterNames.REPOSITORY_NAME, repositoryName).withFieldEnum(ParameterNames.VISIBILITY, visibility).buildUrl();
-        JsonObject json = unmarshall(callApiPost(apiUrl, new HashMap<String, String>()));
-        
+        GitHubAPIResponse resp = callApiPost(apiUrl, new HashMap<String, String>());
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
+
         unmarshall(new TypeToken<Repository>(){}, json.get("repository"));
 	}
 
@@ -89,7 +96,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
         parameters.put(ParameterNames.DESCRIPTION, description);
         parameters.put(ParameterNames.HOME_PAGE, homePage);
         parameters.put(ParameterNames.PUBLIC, ((visibility == Visibility.PUBLIC)? "1" : "0"));
-        JsonObject json = unmarshall(callApiPost(apiUrl, parameters));
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<Repository>(){}, json.get("repository"));
 	}
@@ -101,11 +110,14 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public void deleteRepository(String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.DELETE_REPOSITORY_URL);
         String                apiUrl  = builder.withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiPost(apiUrl, new HashMap<String, String>()));
+        GitHubAPIResponse resp = callApiPost(apiUrl, new HashMap<String, String>());
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
+
         if (json.has("delete_token")) {
         	Map<String, String> parameters = new HashMap<String, String>();
         	parameters.put(ParameterNames.DELETE_TOKEN, json.get("delete_token").getAsString());
-        	callApiPost(apiUrl, parameters);
+		processHeaders(callApiPost(apiUrl, parameters).getHeaders());
         }
 	}
 
@@ -116,7 +128,10 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public Repository forkRepository(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.FORK_REPOSITORY_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiPost(apiUrl, new HashMap<String, String>()));
+        GitHubAPIResponse resp = callApiPost(apiUrl, new HashMap<String, String>());
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
+
         return unmarshall(new TypeToken<Repository>(){}, json.get("repository"));
 	}
 
@@ -127,7 +142,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public Map<String, String> getBranches(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_BRANCHES_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<Map<String, String>>(){}, json.get("branches"));
 	}
@@ -139,7 +156,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public List<String> getCollaborators(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_COLLABORATORS_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<String>>(){}, json.get("collaborators"));
 	}
@@ -151,7 +170,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public List<User> getContributors(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_CONTRIBUTORS_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<User>>(){}, json.get("contributors"));
 	}
@@ -163,7 +184,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public List<Repository> getForks(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_FORKS_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("network"));
 	}
@@ -175,7 +198,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public List<Key> getDeployKeys(String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_DEPLOY_KEYS_URL);
         String                apiUrl  = builder.withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Key>>(){}, json.get("public_keys"));
 	}
@@ -188,7 +213,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 			String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_LANGUAGE_BREAKDOWN_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<Map<Language, Long>>(){}, json.get("languages"));
 	}
@@ -200,7 +227,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public List<Repository> getPushableRepositories() {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_PUSHABLE_REPOSITORIES_URL);
         String                apiUrl  = builder.buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("repositories"));
 	}
@@ -212,7 +241,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public List<Repository> getRepositories(String userName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_REPOSITORIES_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("repositories"));
 	}
@@ -224,7 +255,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public Repository getRepository(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_REPOSITORY_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<Repository>(){}, json.get("repository"));
 	}
@@ -236,7 +269,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public Map<String, String> getTags(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_TAGS_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<Map<String, String>>(){}, json.get("tags"));
 	}
@@ -248,7 +283,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public List<String> getWatchers(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_WATCHERS_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<String>>(){}, json.get("watchers"));
 	}
@@ -261,7 +298,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 			String collaboratorName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.REMOVE_COLLABORATOR_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).withField(ParameterNames.COLLABORATOR_NAME, collaboratorName).buildUrl();
-        unmarshall(callApiPost(apiUrl, new HashMap<String, String>()));
+        GitHubAPIResponse resp = callApiPost(apiUrl, new HashMap<String, String>());
+        processHeaders(resp.getHeaders());
+        unmarshall(resp.getInputStream());
 	}
 
 	/* (non-Javadoc)
@@ -273,7 +312,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
         String                apiUrl  = builder.withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(ParameterNames.ID, id);
-        unmarshall(callApiPost(apiUrl, parameters));
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
+        unmarshall(resp.getInputStream());
 	}
 
 	/* (non-Javadoc)
@@ -283,7 +324,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public List<Repository> searchRepositories(String query) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.SEARCH_REPOSITORIES_URL);
         String                apiUrl  = builder.withField(ParameterNames.KEYWORD, query).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("repositories"));
 	}
@@ -295,7 +338,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public List<Repository> searchRepositories(String query, Language language) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.SEARCH_REPOSITORIES_URL);
         String                apiUrl  = builder.withField(ParameterNames.KEYWORD, query).withParameterEnum(ParameterNames.LANGUAGE, language).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("repositories"));
 	}
@@ -307,7 +352,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public List<Repository> searchRepositories(String query, int pageNumber) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.SEARCH_REPOSITORIES_URL);
         String                apiUrl  = builder.withField(ParameterNames.KEYWORD, query).withParameter(ParameterNames.START_PAGE, String.valueOf(pageNumber)).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("repositories"));
 	}
@@ -320,7 +367,9 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 			int pageNumber) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.SEARCH_REPOSITORIES_URL);
         String                apiUrl  = builder.withField(ParameterNames.KEYWORD, query).withParameterEnum(ParameterNames.LANGUAGE, language).withParameter(ParameterNames.START_PAGE, String.valueOf(pageNumber)).buildUrl();
-        JsonObject json = unmarshall(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
         
         return unmarshall(new TypeToken<List<Repository>>(){}, json.get("repositories"));
 	}
@@ -332,8 +381,10 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public void unwatchRepository(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.UNWATCH_REPOSITORY_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        unmarshall(callApiPost(apiUrl, new HashMap<String, String>()));
-	}
+        GitHubAPIResponse resp = callApiPost(apiUrl, new HashMap<String, String>());
+        processHeaders(resp.getHeaders());
+        unmarshall(resp.getInputStream());
+    }
 
 	/* (non-Javadoc)
 	 * @see com.github.api.v2.services.RepositoryService#updateRepository(com.github.api.v2.schema.Repository)
@@ -348,8 +399,10 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
         parameters.put("values[" + ParameterNames.HAS_WIKI + "]", String.valueOf(repository.isHasWiki()));
         parameters.put("values[" + ParameterNames.HAS_ISSUES + "]", String.valueOf(repository.isHasIssues()));
         parameters.put("values[" + ParameterNames.HAS_DOWNLOADS + "]", String.valueOf(repository.isHasDownloads()));
-        JsonObject json = unmarshall(callApiPost(apiUrl, parameters));
-        
+        GitHubAPIResponse resp = callApiPost(apiUrl, parameters);
+        processHeaders(resp.getHeaders());
+        JsonObject json = unmarshall(resp.getInputStream());
+
         unmarshall(new TypeToken<Repository>(){}, json.get("repository"));
 	}
 
@@ -360,7 +413,10 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public void watchRepository(String userName, String repositoryName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.WATCH_REPOSITORY_URL);
         String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).buildUrl();
-        unmarshall(callApiPost(apiUrl, new HashMap<String, String>()));
+        GitHubAPIResponse resp = callApiPost(apiUrl, new HashMap<String, String>());
+        processHeaders(resp.getHeaders());
+        unmarshall(resp.getInputStream());
+
 	}
 	
 	/* (non-Javadoc)
@@ -370,6 +426,8 @@ public class RepositoryServiceImpl extends BaseGitHubService implements
 	public ZipInputStream getRepositoryArchive(String userName, String repositoryName, String branchName) {
 		GitHubApiUrlBuilder builder = createGitHubApiUrlBuilder(GitHubApiUrls.RepositoryApiUrls.GET_REPOSITORY_ARCHIVE_URL);
 	    String                apiUrl  = builder.withField(ParameterNames.USER_NAME, userName).withField(ParameterNames.REPOSITORY_NAME, repositoryName).withField(ParameterNames.BRANCH, branchName).buildUrl();
-	    return new ZipInputStream(callApiGet(apiUrl));
+        GitHubAPIResponse resp = callApiGet(apiUrl);
+        processHeaders(resp.getHeaders());
+	    return new ZipInputStream(resp.getInputStream());
 	}
 }

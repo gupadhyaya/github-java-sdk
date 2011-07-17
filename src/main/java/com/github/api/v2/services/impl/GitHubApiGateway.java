@@ -29,11 +29,13 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
+import com.github.api.v2.services.GitHubAPIResponse;
 import com.github.api.v2.services.GitHubException;
 import com.github.api.v2.services.auth.Authentication;
 import com.github.api.v2.services.auth.HeaderBasedAuthentication;
@@ -206,7 +208,7 @@ public abstract class GitHubApiGateway {
 	 * 
 	 * @return the input stream
 	 */
-	protected InputStream callApiGet(String apiUrl) {
+	protected GitHubAPIResponse callApiGet(String apiUrl) {
 		return callApiGet(apiUrl, HttpURLConnection.HTTP_OK);
 	}
 
@@ -220,7 +222,7 @@ public abstract class GitHubApiGateway {
 	 * 
 	 * @return the input stream
 	 */
-	protected InputStream callApiGet(String apiUrl, int expected) {
+	protected GitHubAPIResponse callApiGet(String apiUrl, int expected) {
 	    try {
 	        URL               url     = new URL(apiUrl);
 	        if (!requestParameters.isEmpty()) {
@@ -251,8 +253,10 @@ public abstract class GitHubApiGateway {
 	            throw new GitHubException(convertStreamToString(getWrappedInputStream(request.getErrorStream(),
                         GZIP_ENCODING.equalsIgnoreCase(request.getContentEncoding()))));
 	        } else {
-	            return getWrappedInputStream(request.getInputStream(),
-	                                         GZIP_ENCODING.equalsIgnoreCase(request.getContentEncoding()));
+			Map<String, List<String>> headers = request.getHeaderFields();
+	            InputStream rv = getWrappedInputStream(request.getInputStream(),
+				GZIP_ENCODING.equalsIgnoreCase(request.getContentEncoding()));
+	            return new GitHubAPIResponseImpl(rv, request.getHeaderFields());
 	        }
 	    } catch (IOException e) {
 	        throw new GitHubException(e);
@@ -269,7 +273,7 @@ public abstract class GitHubApiGateway {
 	 * 
 	 * @return the input stream
 	 */
-	protected InputStream callApiPost(String apiUrl, Map<String, String> parameters) {
+	protected GitHubAPIResponse callApiPost(String apiUrl, Map<String, String> parameters) {
 		return callApiPost(apiUrl, parameters, HttpURLConnection.HTTP_OK);
 	}
 	
@@ -285,7 +289,7 @@ public abstract class GitHubApiGateway {
 	 * 
 	 * @return the input stream
 	 */
-	protected InputStream callApiPost(String apiUrl, Map<String, String> parameters, int expected) {
+	protected GitHubAPIResponse callApiPost(String apiUrl, Map<String, String> parameters, int expected) {
 		try {
             URL               url     = new URL(apiUrl);
             HttpURLConnection request = (HttpURLConnection) url.openConnection();
@@ -319,8 +323,9 @@ public abstract class GitHubApiGateway {
             	throw new GitHubException(convertStreamToString(getWrappedInputStream(request.getErrorStream(),
                         GZIP_ENCODING.equalsIgnoreCase(request.getContentEncoding()))));
             } else {
-                return getWrappedInputStream(request.getInputStream(),
+                InputStream rv = getWrappedInputStream(request.getInputStream(),
                         GZIP_ENCODING.equalsIgnoreCase(request.getContentEncoding()));
+                return new GitHubAPIResponseImpl(rv, request.getHeaderFields());
             }
 		} catch (IOException e) {
 			throw new GitHubException(e);
@@ -337,7 +342,7 @@ public abstract class GitHubApiGateway {
 	 * 
 	 * @return the input stream
 	 */
-	protected InputStream callApiDelete(String apiUrl) {
+	protected GitHubAPIResponse callApiDelete(String apiUrl) {
 		return callApiDelete(apiUrl, HttpURLConnection.HTTP_OK);
 	}
 
@@ -351,7 +356,7 @@ public abstract class GitHubApiGateway {
 	 * 
 	 * @return the input stream
 	 */
-	protected InputStream callApiDelete(String apiUrl, int expected) {
+	protected GitHubAPIResponse callApiDelete(String apiUrl, int expected) {
 	    try {
 	        URL               url     = new URL(apiUrl);
 
@@ -377,8 +382,9 @@ public abstract class GitHubApiGateway {
 	            throw new GitHubException(convertStreamToString(getWrappedInputStream(request.getErrorStream(),
                         GZIP_ENCODING.equalsIgnoreCase(request.getContentEncoding()))));
 	        } else {
-	            return getWrappedInputStream(request.getInputStream(),
+	            InputStream rv = getWrappedInputStream(request.getInputStream(),
 	                                         GZIP_ENCODING.equalsIgnoreCase(request.getContentEncoding()));
+	            return new GitHubAPIResponseImpl(rv, request.getHeaderFields());
 	        }
 	    } catch (IOException e) {
 	        throw new GitHubException(e);
@@ -425,7 +431,7 @@ public abstract class GitHubApiGateway {
 	 * 
 	 * @return the input stream
 	 */
-	protected InputStream callApiMethod(String apiUrl, String xmlContent, String contentType,
+	protected GitHubAPIResponse callApiMethod(String apiUrl, String xmlContent, String contentType,
 			String method, int expected) {
 	    try {
 	        URL               url     = new URL(apiUrl);
@@ -464,8 +470,9 @@ public abstract class GitHubApiGateway {
 	            throw new GitHubException(convertStreamToString(getWrappedInputStream(request.getErrorStream(),
                         GZIP_ENCODING.equalsIgnoreCase(request.getContentEncoding()))));
 	        } else {
-	            return getWrappedInputStream(request.getInputStream(),
+	            InputStream rv = getWrappedInputStream(request.getInputStream(),
 	                                         GZIP_ENCODING.equalsIgnoreCase(request.getContentEncoding()));
+	            return new GitHubAPIResponseImpl(rv, request.getHeaderFields());
 	        }
 	    } catch (IOException e) {
 	        throw new GitHubException(e);
