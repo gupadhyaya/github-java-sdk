@@ -30,7 +30,7 @@ import com.github.api.v2.schema.Issue.State;
 public class PullRequest extends SchemaEntity {
 	
 	/** The Constant DATE_FORMAT. */
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 9155892708485181542L;

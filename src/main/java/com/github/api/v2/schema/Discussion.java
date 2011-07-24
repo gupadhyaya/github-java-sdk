@@ -159,6 +159,9 @@ public class Discussion extends SchemaEntity {
 	/** The original commit id. */
 	private String originalCommitId;
 	
+	/** The commit message */
+	private String message;
+	
 	/**
 	 * Gets the type.
 	 * 
@@ -468,7 +471,7 @@ public class Discussion extends SchemaEntity {
 	 */
 	@Override
 	public String toString() {
-		return "Comment [body=" + body + ", createdAt=" + createdAt
+		return "Comment [body=" + body + ", message=" + message +", createdAt=" + createdAt
 				+ ", gravatarId=" + gravatarId + ", id=" + id + ", updatedAt="
 				+ updatedAt + ", user=" + user + "]";
 	}
@@ -545,7 +548,6 @@ public class Discussion extends SchemaEntity {
 	 */
 	public void setCommittedDate(Date committedDate) {
 		this.committedDate = (committedDate == null)? null : getDateFormat().format(committedDate);
-		System.out.println("Setting Committed Date: " + committedDate + " " + this.committedDate);
 	}
 
 	/**
@@ -592,5 +594,13 @@ public class Discussion extends SchemaEntity {
 	 */
 	public void setParents(List<Id> parents) {
 		this.parents = parents;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 }
