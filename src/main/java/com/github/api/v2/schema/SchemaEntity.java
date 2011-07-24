@@ -30,4 +30,14 @@ public abstract class SchemaEntity implements Serializable {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 250056223059654638L;
+	
+    /**
+     * Removes colons from the time zone so it can be parsed properly
+     * 
+     * @param inputDate
+     * @return
+     */
+    protected String cleanDate(String inputDate) {
+    	return inputDate.replaceAll("([\\+\\-]\\d\\d):(\\d\\d)$", "$1$2");
+    }
 }

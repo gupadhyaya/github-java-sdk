@@ -34,7 +34,7 @@ public class Discussion extends SchemaEntity {
 	private static final SimpleDateFormat COMMENT_DATE_FORMAT = new SimpleDateFormat(ApplicationConstants.DATE_FORMAT);
 	
 	/** The Constant COMMIT_DATE_FORMAT. */
-	private static final SimpleDateFormat COMMIT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	private static final SimpleDateFormat COMMIT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 	
 	/**
 	 * The Enum Type.
@@ -530,7 +530,7 @@ public class Discussion extends SchemaEntity {
 			return null;
 		} else {
 			try {
-				return getDateFormat().parse(committedDate);
+				return getDateFormat().parse(cleanDate(committedDate));
 			} catch (ParseException e) {
 				return null;
 			}
@@ -545,6 +545,7 @@ public class Discussion extends SchemaEntity {
 	 */
 	public void setCommittedDate(Date committedDate) {
 		this.committedDate = (committedDate == null)? null : getDateFormat().format(committedDate);
+		System.out.println("Setting Committed Date: " + committedDate + " " + this.committedDate);
 	}
 
 	/**
@@ -557,7 +558,7 @@ public class Discussion extends SchemaEntity {
 			return null;
 		} else {
 			try {
-				return getDateFormat().parse(authoredDate);
+				return getDateFormat().parse(cleanDate(authoredDate));
 			} catch (ParseException e) {
 				return null;
 			}
