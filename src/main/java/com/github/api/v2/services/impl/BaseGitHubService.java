@@ -20,9 +20,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import com.github.api.v2.schema.Discussion;
 import com.github.api.v2.schema.Gist;
@@ -48,6 +54,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -101,6 +110,7 @@ public abstract class BaseGitHubService extends GitHubApiGateway implements GitH
      */
     @SuppressWarnings("unchecked")
     protected <T> T unmarshall(TypeToken<T> typeToken, JsonElement response) {
+    	// 2011-08-07T20:24:54-07:00
         Gson gson = getGsonBuilder().create();
         return (T) gson.fromJson(response, typeToken.getType());
     }
@@ -202,6 +212,8 @@ public abstract class BaseGitHubService extends GitHubApiGateway implements GitH
                     return Job.Type.fromValue(arg0.getAsString());
                 }
             });
+        // added to handle different styles of dates
+        builder.registerTypeAdapter(Date.class, new DateTypeAdapter());
         return builder;
     }
     
@@ -265,5 +277,63 @@ public abstract class BaseGitHubService extends GitHubApiGateway implements GitH
     public int getRateLimitRemaining() {
 	if (rateLimitRemaining == null) return -1;
 	return rateLimitRemaining.intValue();
+    }
+    
+    /**
+     * This brute forces a date. Needed because different elements of GitHub provide
+     * dates in many different formats.
+     * 
+     * Based on code from the Caliper Project:
+     *   http://code.google.com/p/caliper/source/browse/trunk/caliper/src/main/java/com/google/caliper/Json.java
+     * @author patrick
+     */
+    private static class DateTypeAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {
+        private final DateFormat dateFormat;
+        private final DateFormat altDateFormat;
+        
+        private DateTypeAdapter() {
+        	// dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz", Locale.US);
+        	dateFormat = new SimpleDateFormat(ApplicationConstants.DATE_FORMAT);
+        	dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        	altDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        	altDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+
+        @Override public synchronized JsonElement serialize(Date date, Type type,
+            JsonSerializationContext jsonSerializationContext) {
+        	return new JsonPrimitive(dateFormat.format(date));
+        }
+
+        @Override public synchronized Date deserialize(JsonElement jsonElement, Type type,
+            JsonDeserializationContext jsonDeserializationContext) {
+		    String dateString = jsonElement.getAsString();
+		    // first try to parse as an ISO 8601 date
+		    try {
+		    	return dateFormat.parse(dateString);
+		    } catch (ParseException ignored) {
+		    }
+		  
+		    // next, try a GSON-style locale-specific dates
+		    try {
+		    	return DateFormat.getDateTimeInstance().parse(dateString);
+		    } catch (ParseException ignored) {
+		    }
+		  
+		    try {
+		    	return altDateFormat.parse(dateString);
+		    } catch (ParseException ignored) {
+		    }
+		  
+		    try {
+		    	return altDateFormat.parse(cleanDate(dateString));
+		    } catch (ParseException ignored) {
+		    }
+		    
+		    throw new JsonParseException(dateString);
+        }
+        
+        protected String cleanDate(String inputDate) {
+            return inputDate.replaceAll("([\\+\\-]\\d\\d):(\\d\\d)$", "$1$2");
+        }
     }
 }
